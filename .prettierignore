@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+coverage
+.env
+.env.*.local
+*.log
+logs
+package-lock.json
+yarn.lock
+tmp
