@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import ApiError from "../utils/ApiError.js";
 import User from "../models/User.Model.js";
 
-const verifyToken = async(req, res, next) => {
+const verifyToken = async (req, res, next) => {
   try {
     const token =
       req.cookies.accessToken || req.headers.authorization?.split(" ")[1];
@@ -10,7 +10,9 @@ const verifyToken = async(req, res, next) => {
       throw new ApiError("Access token is required", 401);
     }
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    const user = await User.findById(decoded?.id).select("-password -refresh_token");
+    const user = await User.findById(decoded?.id).select(
+      "-password -refresh_token"
+    );
     if (!user) {
       throw new ApiError("User not found", 404);
     }

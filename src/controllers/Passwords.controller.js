@@ -59,7 +59,6 @@ const deletePasswordEntry = async (req, res) => {
     const deletedEntryData = deletedEntry.toObject();
     delete deletedEntryData.userId; // Optionally remove userId from response
 
-
     res
       .status(200)
       .json(
@@ -76,4 +75,4 @@ const deletePasswordEntry = async (req, res) => {
   }
 };
 
-export { addPasswordEntry , deletePasswordEntry };
+export { addPasswordEntry, deletePasswordEntry };
