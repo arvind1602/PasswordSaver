@@ -11,7 +11,7 @@ const verifyToken = async (req, res, next) => {
     }
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     const user = await User.findById(decoded?.id).select(
-      "-password -refresh_token"
+      " -refresh_token"
     );
     if (!user) {
       throw new ApiError("User not found", 404);

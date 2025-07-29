@@ -68,7 +68,7 @@ const loginUser = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-       maxAge: 7 * 24 * 60 * 60 * 1000, 
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     };
 
     res
@@ -124,7 +124,7 @@ const refreshAccessToken = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-       maxAge: 7 * 24 * 60 * 60 * 1000, 
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     };
     res
       .cookie("refreshToken", newRefreshToken, options)
@@ -152,4 +152,53 @@ const verifyUser = async (req, res) => {
     });
   }
 };
-export { CreateUser, loginUser, logoutUser, refreshAccessToken , verifyUser };
+const updateUsername = async (req, res) => {
+  const user = req.user;
+  user.username = req.body.username;
+  await user.save();
+  res.json({ message: "Username updated successfully" });
+};
+
+const changePassword = async (req, res) => {
+  try {
+    const user = req.user;
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      throw new ApiError("Old and new passwords are required", 400);
+    }
+
+    const isMatch = await user.isPasswordValid(oldPassword);
+    if (!isMatch) {
+      throw new ApiError("Old password is incorrect", 401);
+    }
+
+    user.password = newPassword; // This will be hashed by pre-save hook
+    await user.save();
+
+    res
+      .status(200)
+      .json(new ApiResponse(null, "✅ Password changed successfully", 200));
+  } catch (error) {
+    res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "❌ Failed to change password" });
+  }
+};
+
+const deleteAccount = async (req, res) => {
+  await User.findByIdAndDelete(req.user._id);
+  res.clearCookie("accessToken").clearCookie("refreshToken");
+  res.json({ message: "Account deleted successfully" });
+};
+
+export {
+  CreateUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  verifyUser,
+  deleteAccount,
+  changePassword,
+  updateUsername,
+};

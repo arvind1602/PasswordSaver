@@ -1,6 +1,7 @@
 import express from "express";
 import UserRouter from "./routes/User.Router.js";
 import PasswordRouter from "./routes/Passwords.Route.js";
+import  ProfileRouter  from "./routes/Profile.Router.js"
 import PasswordShowRouter from "./routes/Pass.show.Router.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -23,5 +24,6 @@ app.use(cookieParser());
 app.use("/api/users", UserRouter);
 app.use("/api/passwords", PasswordRouter);
 app.use("/api/passwords/show", PasswordShowRouter);
+app.use("/api/user" , ProfileRouter)
 
 export default app;

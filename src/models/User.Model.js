@@ -1,4 +1,4 @@
-import moogose, { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -31,7 +31,6 @@ const UserSchema = new Schema(
       required: true,
       minlength: 6,
     },
-
     refresh_token: {
       type: String,
       default: null,
@@ -43,6 +42,7 @@ const UserSchema = new Schema(
   }
 );
 
+// 🔐 Hash password before save
 UserSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     const salt = await bcrypt.genSalt(10);
@@ -51,27 +51,28 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
+// 🔑 Password validation method
 UserSchema.methods.isPasswordValid = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+// 🎟️ Generate access token
 UserSchema.methods.generateAccessToken = function () {
-  const token = jwt.sign(
+  return jwt.sign(
     { id: this._id, username: this.username },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_SECRET_EXPIRES_IN }
   );
-  return token;
 };
 
+// 🔁 Generate refresh token
 UserSchema.methods.generateRefreshToken = function () {
-  const token = jwt.sign(
+  return jwt.sign(
     { id: this._id, username: this.username },
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: process.env.REFRESH_TOKEN_SECRET_EXPIRES_IN }
   );
-  return token;
 };
 
-const User = moogose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema); // ✅ Fixed here
 export default User;

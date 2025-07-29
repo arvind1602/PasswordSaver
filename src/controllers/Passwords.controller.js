@@ -74,5 +74,33 @@ const deletePasswordEntry = async (req, res) => {
       .json({ message: "Error deleting password entry", error: error.message });
   }
 };
+const updatePassword = async (req, res) => {
+  const { id } = req.params;
+  const { serviceName, username, password } = req.body;
 
-export { addPasswordEntry, deletePasswordEntry };
+  if (!serviceName || !username || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  try {
+    const updated = await PasswordEntry.findOneAndUpdate(
+      { _id: id, userId: req.user._id }, // Ensure user owns it
+      { serviceName, username, password },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Password entry not found" });
+    }
+
+    res
+      .status(200)
+      .json(new ApiResponse(updated, "Password updated successfully", 200));
+  } catch (error) {
+    res.status(500).json({
+      message: error.message || "Error updating password",
+    });
+  }
+};
+
+export { addPasswordEntry, deletePasswordEntry, updatePassword };
