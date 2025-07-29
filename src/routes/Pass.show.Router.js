@@ -8,8 +8,4 @@ router
   .route("/user-passwords")
   .get(verifyToken, PassShowController.getUserPasswords);
 
-router
-  .route("/user-password-search")
-  .post(verifyToken, PassShowController.getPasswordByName);
-
 export default router;

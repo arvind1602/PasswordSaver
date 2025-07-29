@@ -47,7 +47,7 @@ const loginUser = async (req, res) => {
   if (!username || !password) {
     return res
       .status(400)
-      .json({ message: "Username and password are required" });
+      .json(new ApiResponse(null, "all field are required", 200));
   }
   try {
     const user = await User.findOne({ username: username });
@@ -68,6 +68,7 @@ const loginUser = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
+       maxAge: 7 * 24 * 60 * 60 * 1000, 
     };
 
     res
@@ -123,6 +124,7 @@ const refreshAccessToken = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
+       maxAge: 7 * 24 * 60 * 60 * 1000, 
     };
     res
       .cookie("refreshToken", newRefreshToken, options)
@@ -136,5 +138,18 @@ const refreshAccessToken = async (req, res) => {
     });
   }
 };
+const verifyUser = async (req, res) => {
+  try {
+    const user = req.user; // Already added by middleware
+    if (!user || !user._id) {
+      throw new ApiError("Access token not verified", 401);
+    }
 
-export { CreateUser, loginUser, logoutUser, refreshAccessToken };
+    res.status(200).json(new ApiResponse(user, "Success", 200));
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Verification failed",
+    });
+  }
+};
+export { CreateUser, loginUser, logoutUser, refreshAccessToken , verifyUser };
