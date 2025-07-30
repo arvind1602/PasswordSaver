@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 app.use(
   cors({
-    origin: "https://passwordsaver-bice.vercel.app",
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
   })
 );
