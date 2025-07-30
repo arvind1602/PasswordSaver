@@ -1,15 +1,15 @@
-import { Resend } from 'resend';
-import dotenv from "dotenv"
-dotenv.config() 
+import { Resend } from "resend";
+import dotenv from "dotenv";
+dotenv.config();
 
-const resend = new Resend(process.env.RESEND_API_KEY || re_czwiDarw_B5ZQbVfuK4qrgTDwyPw9xLG7);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendVerificationEmail = async (to, code) => {
   try {
     await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: "Password Saver <no-reply@passwordsaver.shop>",
       to,
-      subject: 'Your Verification Code',
+      subject: "Your Verification Code",
       html: `
         <div style="font-family: sans-serif; padding: 20px;">
           <h2 style="color: #6366f1;">Verify your email</h2>
