@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+console.log("model");
 
 const UserSchema = new Schema(
   {
@@ -34,6 +35,10 @@ const UserSchema = new Schema(
     refresh_token: {
       type: String,
       default: null,
+    },
+    verification: {
+      type: Boolean,
+      default: false,
     },
   },
   {

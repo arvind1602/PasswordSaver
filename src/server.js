@@ -1,10 +1,10 @@
+
 import dotenv from "dotenv";
+dotenv.config({ path: './.env' })
 import connectDB from "./db/db.connection.js";
 import app from "./app.js";
 
-dotenv.config({
-  path: "./.env",
-});
+
 
 connectDB()
   .then(() => {
@@ -16,3 +16,5 @@ connectDB()
   .catch((err) => {
     console.error("MONGODB connection failed: ", err);
   });
+console.log(process.env.ACCESS_TOKEN_SECRET);
+console.log(process.env.CORS_ORIGIN);

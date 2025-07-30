@@ -15,27 +15,51 @@ const CreateUser = async (req, res) => {
   try {
     const { username, email, fullname, password } = req.body;
 
-    // Check if any field is missing
+    // Check for missing fields
     if (!username || !email || !fullname || !password) {
       throw new ApiError("All fields are required", 400);
     }
 
-    const existingUser = await User.findOne({ username });
+    // Check if username already exists
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
-      throw new ApiError("Username already exists", 400);
+      throw new ApiError("Username or email already exists", 400);
     }
 
-    const newUser = await User.create({ username, email, fullname, password });
-    // Remove sensitive fields before sending response
+    // Create new user
+    const newUser = await User.create({
+      username,
+      email,
+      fullname,
+      password,
+      verification: false,
+    });
+
+    // Prepare response (hide sensitive data)
     const userObj = newUser.toObject();
     delete userObj.password;
     delete userObj.refresh_token;
 
-    res
+    // 🕒 Delete unverified user after 10 minutes
+    setTimeout(
+      async () => {
+        const freshUser = await User.findById(newUser._id);
+        if (freshUser && !freshUser.verification) {
+          await User.findByIdAndDelete(newUser._id);
+          console.log(
+            `🗑️ Unverified user ${username} deleted after 10 minutes`
+          );
+        }
+      },
+      8 * 60 * 1000
+    ); // 10 minutes
+
+    // Return response
+    return res
       .status(201)
       .json(new ApiResponse(userObj, "User created successfully", 201));
   } catch (error) {
-    res.status(error.statusCode || 500).json({
+    return res.status(error.statusCode || 500).json({
       message: error.message || "An error occurred while creating user",
     });
   }
@@ -57,6 +81,13 @@ const loginUser = async (req, res) => {
     const ispasswordMatch = await user.isPasswordValid(password);
     if (!ispasswordMatch) {
       throw new ApiError("Invalid password", 401);
+    }
+
+    if (!user.verification) {
+      throw new ApiError(
+        "⏳ Email verification not completed in time. Your account has been removed after 10 minutes. Please sign up again to get started.",
+        401
+      );
     }
     const { accessToken, refreshToken } = await generatetoken(user);
 
