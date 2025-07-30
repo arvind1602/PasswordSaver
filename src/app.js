@@ -6,18 +6,19 @@ import PasswordShowRouter from "./routes/Pass.show.Router.js";
 import EmailRouter from "./routes/verification.route.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
-
-
 const app = express();
+const allowedOrigins = [
+  "http://localhost:5173", // Vite dev
+  "https://passwordsaver-bice.vercel.app/", // Your Vercel frontend
+];
 
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "https://passwordsaver-bice.vercel.app",
+    origin: allowedOrigins,
     credentials: true,
-    
   })
 );
 
@@ -32,7 +33,5 @@ app.use("/api/passwords", PasswordRouter);
 app.use("/api/passwords/show", PasswordShowRouter);
 app.use("/api/user", ProfileRouter);
 app.use("/api/email", EmailRouter);
-
-
 
 export default app;
