@@ -12,14 +12,10 @@ dotenv.config();
 
 
 const app = express();
-console.log("app");
-
-console.log(process.env.CORS_ORIGIN);
-console.log(process.env.ACCESS_TOKEN_SECRET);
 
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
     
   })
