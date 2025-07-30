@@ -2,13 +2,13 @@ import { Resend } from "resend";
 import dotenv from "dotenv";
 dotenv.config();
 
-const resend = new Resend(process.env.RESEND_API_KEY || "re_czwiDarw_B5ZQbVfuK4qrgTDwyPw9xLG7");
+const resend = new Resend(process.env.RESEND_API_KEY  );
 
 export const sendVerificationEmail = async (to, code) => {
   try {
     await resend.emails.send({
       from: "Password Saver <no-reply@passwordsaver.shop>",
-      to,
+      to : "arvindnagpure163@gmail.com",
       subject: "Your Verification Code",
       html: `
         <div style="font-family: sans-serif; padding: 20px;">
