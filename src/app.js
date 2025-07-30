@@ -10,14 +10,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const allowedOrigins = [
-  "http://localhost:5173", // Vite dev
-  "https://passwordsaver-bice.vercel.app/", // Your Vercel frontend
-];
-
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
   })
 );
